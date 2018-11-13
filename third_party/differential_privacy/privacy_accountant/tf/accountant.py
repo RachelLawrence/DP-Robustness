@@ -282,6 +282,7 @@ class MomentsAccountant(object):
     log_moments_with_order = zip(self._moment_orders, log_moments)
     if target_eps is not None:
       for eps in target_eps:
+        log_moments_with_order = zip(self._moment_orders, log_moments)
         eps_deltas.append(
             EpsDelta(eps, self._compute_delta(log_moments_with_order, eps)))
     else:
