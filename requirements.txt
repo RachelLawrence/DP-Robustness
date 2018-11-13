@@ -1,2 +1,6 @@
+keras
 numpy
+scipy
+h5py
+pillow
 tensorflow-gpu==1.12.0
