@@ -8,7 +8,6 @@ from six.moves import xrange
 class Model:
     def __init__(self, save_path):
 
-        self.eval_data_path = "data/mnist_train.tfrecord"
         self.image_size = 28
         self.num_channels = 1
         self.num_labels = 10
@@ -76,9 +75,9 @@ class Model:
         print('[%s]' % ',\n'.join(map(str, prediction)))
         return prediction
 
-    def batch_predict(self):
+    def batch_predict(self, eval_data_path):
 
-        prediction = Eval_one_no_softmax(self.eval_data_path,
+        prediction = Eval_one_no_softmax(eval_data_path,
                                          self.network_parameters,
                                          num_testing_images=self.NUM_TESTING_IMAGES,
                                          randomize=False, load_path=self.save_path,
