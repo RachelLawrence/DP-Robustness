@@ -37,7 +37,7 @@ tf.flags.DEFINE_integer("batch_size", 600,
 tf.flags.DEFINE_integer("batches_per_lot", 1,
                         "Number of batches per lot.")
 # Together, batch_size and batches_per_lot determine lot_size.
-tf.flags.DEFINE_integer("num_training_steps", 100,
+tf.flags.DEFINE_integer("num_training_steps", 100*10,
                         "The number of training steps."
                         "This counts number of lots.")
 
@@ -221,6 +221,53 @@ def Eval(mnist_data_file, network_parameters, num_testing_images,
           mistakes if save_mistakes else None)
 
 
+
+def Eval_one_no_softmax(image, network_parameters, num_testing_images,
+         randomize, load_path, save_mistakes=False):
+  """Evaluate MNIST for a number of steps.
+
+  Args:
+    mnist_data_file: Path of a file containing the MNIST images to process.
+    network_parameters: parameters for defining and training the network.
+    num_testing_images: the number of images we will evaluate on.
+    randomize: if false, randomize; otherwise, read the testing images
+      sequentially.
+    load_path: path where to load trained parameters from.
+    save_mistakes: save the mistakes if True.
+
+  Returns:
+    The logits vector?
+  """
+  batch_size = 100
+  num_testing_images = 1
+  # Like for training, we need a session for executing the TensorFlow graph.
+  with tf.Graph().as_default(), tf.Session() as sess:
+    # Create the basic Mnist model.
+    images = image
+    labels = []
+    logits, _, _ = utils.BuildNetwork(images, network_parameters)
+    softmax = tf.nn.softmax(logits)
+
+    # Load the variables.
+    ckpt_state = tf.train.get_checkpoint_state(load_path)
+    if not (ckpt_state and ckpt_state.model_checkpoint_path):
+      raise ValueError("No model checkpoint to eval at %s\n" % load_path)
+
+    saver = tf.train.Saver()
+    saver.restore(sess, ckpt_state.model_checkpoint_path)
+    coord = tf.train.Coordinator()
+    _ = tf.train.start_queue_runners(sess=sess, coord=coord)
+
+    total_examples = 0
+    correct_predictions = 0
+    image_index = 0
+    mistakes = []
+
+    predictions, label_values = sess.run([logits, labels])
+    return predictions
+
+
+
 def Train(mnist_train_file, mnist_test_file, network_parameters, num_steps,
           save_path, eval_steps=0):
   """Train MNIST for a number of steps.
@@ -394,7 +441,7 @@ def Train(mnist_train_file, mnist_test_file, network_parameters, num_steps,
         for spent_eps, spent_delta in spent_eps_deltas:
           sys.stderr.write("spent privacy: eps %.4f delta %.5g\n" % (
               spent_eps, spent_delta))
-
+        sys.stderr.write("epoch: %.4f \n" % epoch)
         saver.save(sess, save_path=save_path + "/ckpt")
         train_accuracy, _ = Eval(mnist_train_file, network_parameters,
                                  num_testing_images=NUM_TESTING_IMAGES,
