@@ -9,13 +9,13 @@ import tensorflow as tf
 import numpy as np
 import time
 
-from .setup_cifar import CIFAR, CIFARModel
-from .setup_mnist import MNIST, MNISTModel
-from .setup_inception import ImageNet, InceptionModel
+from third_party.carlini.setup_cifar import CIFAR, CIFARModel
+from third_party.carlini.setup_mnist import MNIST, MNISTModel
+from third_party.carlini.setup_inception import ImageNet, InceptionModel
 
-from .l2_attack import CarliniL2
-from .l0_attack import CarliniL0
-from .li_attack import CarliniLi
+from third_party.carlini.l2_attack import CarliniL2
+from third_party.carlini.l0_attack import CarliniL0
+from third_party.carlini.li_attack import CarliniLi
 
 
 def show(img):
