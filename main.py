@@ -5,32 +5,30 @@
 ## This program is licenced under the BSD 2-Clause licence,
 ## contained in the LICENCE file in this directory.
 
-import tensorflow as tf
-import numpy as np
 import time
 
-# from third_party.carlini.setup_cifar import CIFAR, CIFARModel
-from third_party.carlini.setup_mnist import MNIST #, MNISTModel
-# from third_party.carlini.setup_inception import ImageNet, InceptionModel
+import numpy as np
+import tensorflow as tf
 
 from Model import Model
-
 from third_party.carlini.l2_attack import CarliniL2
-<<<<<<< HEAD
-from third_party.carlini.l0_attack import CarliniL0
-from third_party.carlini.li_attack import CarliniLi
+# from third_party.carlini.setup_cifar import CIFAR, CIFARModel
+from third_party.carlini.setup_mnist import MNIST  # , MNISTModel
+
+
+# from third_party.carlini.setup_inception import ImageNet, InceptionModel
 
 
 def show(img):
     """
     Show MNSIT digits in the console.
     """
-    remap = "  .*#"+"#"*100
-    img = (img.flatten()+.5)*3
+    remap = "  .*#" + "#" * 100
+    img = (img.flatten() + .5) * 3
     if len(img) != 784: return
     print("START")
     for i in range(28):
-        print("".join([remap[int(round(x))] for x in img[i*28:i*28+28]]))
+        print("".join([remap[int(round(x))] for x in img[i * 28:i * 28 + 28]]))
 
 
 def generate_data(data, samples, targeted=True, start=0, inception=False):
@@ -48,18 +46,18 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
     for i in range(samples):
         if targeted:
             if inception:
-                seq = random.sample(range(1,1001), 10)
+                seq = random.sample(range(1, 1001), 10)
             else:
                 seq = range(data.test_labels.shape[1])
 
             for j in seq:
-                if (j == np.argmax(data.test_labels[start+i])) and (inception == False):
+                if (j == np.argmax(data.test_labels[start + i])) and (inception == False):
                     continue
-                inputs.append(data.test_data[start+i])
+                inputs.append(data.test_data[start + i])
                 targets.append(np.eye(data.test_labels.shape[1])[j])
         else:
-            inputs.append(data.test_data[start+i])
-            targets.append(data.test_labels[start+i])
+            inputs.append(data.test_data[start + i])
+            targets.append(data.test_labels[start + i])
 
     inputs = np.array(inputs)
     targets = np.array(targets)
@@ -71,7 +69,7 @@ if __name__ == "__main__":
     with tf.Session() as sess:
         # data, model =  MNIST(), MNISTModel("models/mnist", sess)
         # data, model =  CIFAR(), CIFARModel("models/cifar", sess)
-        data, model =  MNIST(), Model()
+        data, model = MNIST(), Model()
         attack = CarliniL2(sess, model, batch_size=9, max_iterations=1000, confidence=0)
         # attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10,
         #                   largest_const=15)
@@ -81,33 +79,15 @@ if __name__ == "__main__":
         timestart = time.time()
         adv = attack.attack(inputs, targets)
         timeend = time.time()
-        
-        print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
+
+        print("Took", timeend - timestart, "seconds to run", len(inputs), "samples.")
 
         for i in range(len(adv)):
             print("Valid:")
             show(inputs[i])
             print("Adversarial:")
             show(adv[i])
-            
-            print("Classification:", model.model.predict(adv[i:i+1]))
 
-            print("Total distortion:", np.sum((adv[i]-inputs[i])**2)**.5)
-=======
-from third_party.differential_privacy.dp_sgd.dp_mnist import Eval_one_no_softmax
-from third_party.differential_privacy.dp_sgd.dp_optimizer import utils
-import sys
-import numpy as np
-import tensorflow as tf
-from Model import Model
+            print("Classification:", model.model.predict(adv[i:i + 1]))
 
-model = Model("../output/dp_sgd/dp_mnist")
->>>>>>> 2eb4d7e9a9c33675239709a3f03d3f1e925d38a2
-
-shape = (1, model.image_size, model.image_size, model.num_channels)
-img = tf.Variable(np.zeros(shape), dtype=tf.float32)
-img = tf.cast(tf.image.decode_png(example["image/encoded"], channels=1),
-                tf.float32)
-img = tf.reshape(img, [model.image_size * model.image_size])
-img /= 255
-model.predict(img)
+            print("Total distortion:", np.sum((adv[i] - inputs[i]) ** 2) ** .5)
