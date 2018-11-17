@@ -85,11 +85,10 @@ def GetTensorOpName(x):
     return t[0]
 
 
-def BuildNetwork(inputs, network_parameters):
+def BuildNetwork(images, network_parameters):
   """Build a network using the given parameters.
 
   Args:
-    inputs: a Tensor of floats containing the input data.
     network_parameters: NetworkParameters object
       that describes the parameters for the network.
   Returns:
@@ -101,7 +100,7 @@ def BuildNetwork(inputs, network_parameters):
 
   training_parameters = {}
   num_inputs = network_parameters.input_size
-  outputs = inputs
+  outputs = tf.placeholder_with_default(images, [None, 28 * 28], name='mnist_input')
   projection = None
 
   # First apply convolutions, if needed
@@ -190,6 +189,7 @@ def BuildNetwork(inputs, network_parameters):
     # num_inputs for the next layer is num_units in the current layer.
     num_inputs = num_units
 
+  tf.add_to_collection('logits', outputs)
   return outputs, projection, training_parameters
 
 

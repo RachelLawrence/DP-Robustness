@@ -1,17 +1,16 @@
-from third_party.carlini.l2_attack import CarliniL2
-from third_party.differential_privacy.dp_sgd.dp_mnist import Eval_one_no_softmax
-from third_party.differential_privacy.dp_sgd.dp_optimizer import utils
-import sys
+import os
+
 import numpy as np
 import tensorflow as tf
+
 from Model import Model
 
-model = Model("../output/dp_sgd/dp_mnist")
+with tf.Session() as sess:
+    model = Model(os.path.join('..', 'output', 'dp_sgd', 'dp_mnist'))
 
-shape = (1, model.image_size, model.image_size, model.num_channels)
-img = tf.Variable(np.zeros(shape), dtype=tf.float32)
-img = tf.cast(tf.image.decode_png(example["image/encoded"], channels=1),
-                tf.float32)
-img = tf.reshape(img, [model.image_size * model.image_size])
-img /= 255
-model.predict(img)
+    shape = (1, 28 * 28)
+    img = tf.constant(np.zeros(shape), dtype=tf.float32)
+
+    prediction = model.predict(img)
+    print(sess.run(prediction))
+
