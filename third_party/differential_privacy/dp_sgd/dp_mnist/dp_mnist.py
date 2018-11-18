@@ -269,8 +269,9 @@ def Train(mnist_train_file, mnist_test_file, network_parameters, num_steps,
         logits, projection, training_params = utils.BuildNetwork(
             images, network_parameters)
 
-        cost = tf.nn.softmax_cross_entropy_with_logits(
-            logits=logits, labels=tf.one_hot(labels, 10))
+        labels = tf.one_hot(labels, 10)
+        labels = tf.stop_gradient(labels)
+        cost = tf.nn.softmax_cross_entropy_with_logits_v2(logits=logits, labels=labels)
 
         # The actual cost is the average across the examples.
         cost = tf.reduce_sum(cost, [0]) / batch_size
