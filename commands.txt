@@ -3,3 +3,5 @@ python third_party/differential_privacy/dp_sgd/dp_mnist/dp_mnist.py \
   --training_data_path=data/mnist_train.tfrecord \
   --eval_data_path=data/mnist_test.tfrecord \
   --save_path=../output/dp_sgd/dp_mnist
+
+python attack_dp_mnist.py --model_path output/dp_sgd/dp_mnist/ckpt # -n 100
