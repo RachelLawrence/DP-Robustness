@@ -18,6 +18,9 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.utils import np_utils
 from keras.models import load_model
 
+from third_party.differential_privacy.dp_sgd.dp_optimizer import DPGradientDescentOptimizer
+from third_party.differential_privacy.dp_sgd.dp_optimizer import sanitizer
+
 def extract_data(filename, num_images):
     with gzip.open(filename) as bytestream:
         bytestream.read(16)
@@ -60,7 +63,7 @@ class MNIST:
 
 
 class MNISTModel:
-    def __init__(self, restore, session=None):
+    def __init__(self, restore, session=None, recompile=False, train_temp=1, eps_delta=[1.0, 1e-5]):
         self.num_channels = 1
         self.image_size = 28
         self.num_labels = 10
@@ -87,6 +90,17 @@ class MNISTModel:
         model.add(Activation('relu'))
         model.add(Dense(10))
         model.load_weights(restore)
+
+        if recompile:
+            def fn(correct, predicted):
+                return tf.nn.softmax_cross_entropy_with_logits(labels=correct,
+                                                           logits=predicted/train_temp) 
+
+            dp_sgd = DPGradientDescentOptimizer(learning_rate=0.01, eps_delta=eps_delta, sanitizer=None)
+        
+            model.compile(loss=fn,
+                      optimizer=dp_sgd,
+                      metrics=['accuracy'])
 
         self.model = model
 
