@@ -193,13 +193,13 @@ def Eval(mnist_data_file, network_parameters, num_testing_images,
         saver = tf.train.Saver()
         saver.restore(sess, ckpt_state.model_checkpoint_path)
         coord = tf.train.Coordinator()
-        _ = tf.train.start_queue_runners(sess=sess, coord=coord)
+        # _ = tf.train.start_queue_runners(sess=sess, coord=coord)
 
         total_examples = 0
         correct_predictions = 0
         image_index = 0
         mistakes = []
-        for _ in xrange((num_testing_images + batch_size - 1) // batch_size):
+        for _ in range((num_testing_images + batch_size - 1) // batch_size):
             predictions, label_values = sess.run([softmax, labels])
 
             # Count how many were predicted correctly.
@@ -337,7 +337,7 @@ def Train(mnist_train_file, mnist_test_file, network_parameters, num_steps,
 
         saver = tf.train.Saver()
         coord = tf.train.Coordinator()
-        _ = tf.train.start_queue_runners(sess=sess, coord=coord)
+        # _ = tf.train.start_queue_runners(sess=sess, coord=coord)
 
         # We need to maintain the intialization sequence.
         for v in tf.trainable_variables():
