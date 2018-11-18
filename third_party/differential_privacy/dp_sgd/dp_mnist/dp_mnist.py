@@ -262,7 +262,7 @@ def Train(mnist_train_file, mnist_test_file, network_parameters, num_steps,
                        "pca_sigma": FLAGS.pca_sigma,
                        })
 
-    with tf.Graph().as_default(), tf.Session() as sess, tf.device('/cpu:0'):
+    with tf.Graph().as_default(), tf.Session() as sess:
         # Create the basic Mnist model.
         images, labels = MnistInput(mnist_train_file, batch_size, FLAGS.randomize)
 
