@@ -104,7 +104,7 @@ def BuildNetwork(inputs, network_parameters):
 
     training_parameters = {}
     num_inputs = network_parameters.input_size
-    outputs = inputs
+    outputs = tf.placeholder_with_default(inputs, [None, num_inputs], 'dp_mnist_input')
     projection = None
 
     # First apply convolutions, if needed
@@ -193,6 +193,7 @@ def BuildNetwork(inputs, network_parameters):
         # num_inputs for the next layer is num_units in the current layer.
         num_inputs = num_units
 
+    tf.add_to_collection('dp_mnist_output', outputs)
     return outputs, projection, training_parameters
 
 
