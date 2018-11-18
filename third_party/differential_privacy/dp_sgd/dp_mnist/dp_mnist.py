@@ -138,30 +138,27 @@ def MnistInput(mnist_data_file, batch_size, randomize):
       images: A tensor with the formatted image data. shape [batch_size, 28*28]
       labels: A tensor with the labels for each image.  shape [batch_size]
     """
-    file_queue = tf.train.string_input_producer([mnist_data_file])
-    reader = tf.TFRecordReader()
-    _, value = reader.read(file_queue)
-    example = tf.parse_single_example(
-        value,
-        features={"image/encoded": tf.FixedLenFeature(shape=(), dtype=tf.string),
-                  "image/class/label": tf.FixedLenFeature([1], tf.int64)})
 
-    image = tf.cast(tf.image.decode_png(example["image/encoded"], channels=1),
-                    tf.float32)
-    image = tf.reshape(image, [IMAGE_SIZE * IMAGE_SIZE])
-    image /= 255
-    label = tf.cast(example["image/class/label"], dtype=tf.int32)
-    label = tf.reshape(label, [])
+    def parser(example):
+        features = {"image/encoded": tf.FixedLenFeature(shape=(), dtype=tf.string),
+                    "image/class/label": tf.FixedLenFeature([1], tf.int64)}
+        example = tf.parse_single_example(example, features=features)
+        image = tf.cast(tf.image.decode_png(example["image/encoded"], channels=1), tf.float32)
+        image = tf.reshape(image, [IMAGE_SIZE * IMAGE_SIZE])
+        image /= 255
+        label = tf.cast(example["image/class/label"], dtype=tf.int32)
+        label = tf.reshape(label, [])
+        return image, label
+
+    dataset = tf.data.TFRecordDataset([mnist_data_file])
+    dataset = dataset.map(parser)
 
     if randomize:
-        images, labels = tf.train.shuffle_batch(
-            [image, label], batch_size=batch_size,
-            capacity=(batch_size * 100),
-            min_after_dequeue=(batch_size * 10))
-    else:
-        images, labels = tf.train.batch([image, label], batch_size=batch_size)
+        dataset = dataset.shuffle(batch_size * 100)
 
-    return images, labels
+    dataset = dataset.batch(batch_size)
+    iterator = dataset.make_one_shot_iterator()
+    return iterator.get_next()
 
 
 def Eval(mnist_data_file, network_parameters, num_testing_images,
