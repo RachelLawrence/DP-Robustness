@@ -9,7 +9,7 @@ class Model:
         self.num_channels = 1
         self.num_labels = 10
 
-    def predict(self, input_tensor):
+    def predict(self, input_tensor, sess_input):
         # sess = tf.get_default_session()
         # importer = tf.train.import_meta_graph(self.ckpt + '.meta', import_scope='mnist',
         #                                       input_map={'dp_mnist_input': images})
@@ -25,4 +25,5 @@ class Model:
             importer.restore(sess, self.ckpt)
             init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
             _, output = sess.run([init_op, mnist_output])
-            return output
+            
+            return output, sess_input

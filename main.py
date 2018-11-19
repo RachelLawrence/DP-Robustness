@@ -13,7 +13,7 @@ import tensorflow as tf
 from Model import Model
 from third_party.carlini.l2_attack import CarliniL2
 # from third_party.carlini.setup_cifar import CIFAR, CIFARModel
-from third_party.carlini.setup_mnist import MNIST  # , MNISTModel
+from third_party.carlini.setup_mnist import MNIST, MNISTModel
 
 
 # from third_party.carlini.setup_inception import ImageNet, InceptionModel
@@ -69,8 +69,8 @@ if __name__ == "__main__":
     with tf.Session() as sess:
         # data, model =  MNIST(), MNISTModel("models/mnist", sess)
         # data, model =  CIFAR(), CIFARModel("models/cifar", sess)
-        data, model = MNIST(), Model()
-        attack = CarliniL2(sess, model, batch_size=9, max_iterations=1000, confidence=0)
+        data, model = MNIST(), Model("../output/dp_sgd/dp_mnist")
+        attack = CarliniL2(sess, model, max_iterations=1000, confidence=0)
         # attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10,
         #                   largest_const=15)
 
@@ -88,6 +88,6 @@ if __name__ == "__main__":
             print("Adversarial:")
             show(adv[i])
 
-            print("Classification:", model.model.predict(adv[i:i + 1]))
+            print("Classification:", model.predict(adv[i:i + 1][0]))
 
             print("Total distortion:", np.sum((adv[i] - inputs[i]) ** 2) ** .5)

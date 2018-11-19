@@ -26,12 +26,9 @@ class CarliniL2:
                  boxmin = -0.5, boxmax = 0.5):
         """
         The L_2 optimized attack. 
-
         This attack is the most efficient and should be used as the primary 
         attack to evaluate potential defenses.
-
         Returns adversarial examples for the supplied model.
-
         confidence: Confidence of adversarial examples: higher produces examples
           that are farther away, but more strongly classified as adversarial.
         batch_size: Number of attacks to run simultaneously.
@@ -52,7 +49,6 @@ class CarliniL2:
         """
 
         image_size, num_channels, num_labels = model.image_size, model.num_channels, model.num_labels
-        self.image_size = model.image_size
         self.sess = sess
         self.TARGETED = targeted
         self.LEARNING_RATE = learning_rate
@@ -67,8 +63,7 @@ class CarliniL2:
 
         self.I_KNOW_WHAT_I_AM_DOING_AND_WANT_TO_OVERRIDE_THE_PRESOFTMAX_CHECK = False
 
-        # shape = (batch_size,image_size,image_size,num_channels)
-        shape = (batch_size, image_size ** 2)
+        shape = (batch_size,image_size,image_size,num_channels)
         
         # the variable we're going to optimize over
         modifier = tf.Variable(np.zeros(shape,dtype=np.float32))
@@ -80,23 +75,22 @@ class CarliniL2:
 
         # and here's what we use to assign them
         self.assign_timg = tf.placeholder(tf.float32, shape)
-        self.assign_tlab = tf.placeholder(tf.float32, (batch_size, num_labels))
+        self.assign_tlab = tf.placeholder(tf.float32, (batch_size,num_labels))
         self.assign_const = tf.placeholder(tf.float32, [batch_size])
         
         # the resulting image, tanh'd to keep bounded from boxmin to boxmax
         self.boxmul = (boxmax - boxmin) / 2.
         self.boxplus = (boxmin + boxmax) / 2.
         self.newimg = tf.tanh(modifier + self.timg) * self.boxmul + self.boxplus
-
+        
         # prediction BEFORE-SOFTMAX of the model
-        self.output, self.sess = model.predict(self.newimg, self.sess)
+        self.output = model.predict(self.newimg)
         
         # distance to the input data
-        self.l2dist = tf.reduce_sum(tf.square(self.newimg-(tf.tanh(self.timg) * self.boxmul + self.boxplus)), 1)
-        # self.l2dist = tf.square(self.newimg-(tf.tanh(self.timg) * self.boxmul + self.boxplus))
-
+        self.l2dist = tf.reduce_sum(tf.square(self.newimg-(tf.tanh(self.timg) * self.boxmul + self.boxplus)),[1,2,3])
+        
         # compute the probability of the label class versus the maximum other
-        real = tf.reduce_sum((self.tlab)*self.output)
+        real = tf.reduce_sum((self.tlab)*self.output,1)
         other = tf.reduce_max((1-self.tlab)*self.output - (self.tlab*10000),1)
 
         if self.TARGETED:
@@ -129,7 +123,6 @@ class CarliniL2:
     def attack(self, imgs, targets):
         """
         Perform the L_2 attack on the given images for the given targets.
-
         If self.targeted is true, then the targets represents the target labels.
         If self.targeted is false, then targets are the original class labels.
         """
@@ -151,7 +144,7 @@ class CarliniL2:
                     x[y] -= self.CONFIDENCE
                 else:
                     x[y] += self.CONFIDENCE
-                x = int(np.argmax(x))
+                x = np.argmax(x)
             if self.TARGETED:
                 return x == y
             else:
@@ -177,7 +170,6 @@ class CarliniL2:
             # completely reset adam's internal state.
             self.sess.run(self.init)
             batch = imgs[:batch_size]
-            batch = np.asarray([item.flatten() for item in batch])
             batchlab = labs[:batch_size]
     
             bestl2 = [1e10]*batch_size
@@ -195,10 +187,9 @@ class CarliniL2:
             prev = np.inf
             for iteration in range(self.MAX_ITERATIONS):
                 # perform the attack 
-                self.output = tf.convert_to_tensor(self.output)
                 _, l, l2s, scores, nimg = self.sess.run([self.train, self.loss, 
-                                                self.l2dist, self.output, self.newimg])
-                # print(l2s, nimg)
+                                                         self.l2dist, self.output, 
+                                                         self.newimg])
 
                 if np.all(scores>=-.0001) and np.all(scores <= 1.0001):
                     if np.allclose(np.sum(scores,axis=1), 1.0, atol=1e-3):
@@ -206,8 +197,8 @@ class CarliniL2:
                             raise Exception("The output of model.predict should return the pre-softmax layer. It looks like you are returning the probability vector (post-softmax). If you are sure you want to do that, set attack.I_KNOW_WHAT_I_AM_DOING_AND_WANT_TO_OVERRIDE_THE_PRESOFTMAX_CHECK = True")
                 
                 # print out the losses every 10%
-                if iteration % (self.MAX_ITERATIONS//10) == 0:
-                    print(iteration, self.sess.run((self.l2dist, self.loss,self.loss1,self.loss2)))
+                if iteration%(self.MAX_ITERATIONS//10) == 0:
+                    print(iteration,self.sess.run((self.loss,self.loss1,self.loss2)))
 
                 # check if we should abort search if we're getting nowhere.
                 if self.ABORT_EARLY and iteration%(self.MAX_ITERATIONS//10) == 0:
@@ -217,10 +208,10 @@ class CarliniL2:
 
                 # adjust the best result found so far
                 for e,(l2,sc,ii) in enumerate(zip(l2s,scores,nimg)):
-                    if (l2 < bestl2[e]) and compare(sc, np.argmax(batchlab[e])):
+                    if l2 < bestl2[e] and compare(sc, np.argmax(batchlab[e])):
                         bestl2[e] = l2
                         bestscore[e] = np.argmax(sc)
-                    if (l2 < o_bestl2[e]) and compare(sc, np.argmax(batchlab[e])):
+                    if l2 < o_bestl2[e] and compare(sc, np.argmax(batchlab[e])):
                         o_bestl2[e] = l2
                         o_bestscore[e] = np.argmax(sc)
                         o_bestattack[e] = ii
