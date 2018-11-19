@@ -15,6 +15,10 @@ from keras.optimizers import SGD
 import tensorflow as tf
 from third_party.carlini.setup_mnist import MNIST
 from third_party.carlini.setup_cifar import CIFAR
+
+from third_party.differential_privacy.dp_sgd.dp_optimizer import DPGradientDescentOptimizer
+from third_party.differential_privacy.dp_sgd.dp_optimizer import sanitizer
+
 import os
 
 def train(data, file_name, params, num_epochs=50, batch_size=128, train_temp=1, init=None):
@@ -53,10 +57,14 @@ def train(data, file_name, params, num_epochs=50, batch_size=128, train_temp=1, 
         return tf.nn.softmax_cross_entropy_with_logits(labels=correct,
                                                        logits=predicted/train_temp)
 
+    # Define the DP optimizer, can vary epsilon + delta.
+    # I don't know how to get the sanitizer to work but the model still trains with sanitizer = None
     sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    dp_sgd = DPGradientDescentOptimizer(learning_rate=0.01, eps_delta = [1.0, 1e-5], sanitizer=None)
     
+    # Can compile the model with the new optimizer. 
     model.compile(loss=fn,
-                  optimizer=sgd,
+                  optimizer=dp_sgd,
                   metrics=['accuracy'])
     
     model.fit(data.train_data, data.train_labels,
@@ -103,13 +111,14 @@ def train_distillation(data, file_name, params, num_epochs=50, batch_size=128, t
 
     print(predicted)
     
-if not os.path.isdir('models'):
-    os.makedirs('models')
+if not os.path.isdir('models_noDP'):
+    os.makedirs('models_noDP')
 
-train(CIFAR(), "models/cifar", [64, 64, 128, 128, 256, 256], num_epochs=50)
-train(MNIST(), "models/mnist", [32, 32, 64, 64, 200, 200], num_epochs=50)
+# train(CIFAR(), "models_DP/cifar", [64, 64, 128, 128, 256, 256], num_epochs=50)
+# TODO: CHANGE NUM_EPOCHS
+train(MNIST(), "models_noDP/mnist", [32, 32, 64, 64, 200, 200], num_epochs=5)
 
-train_distillation(MNIST(), "models/mnist-distilled-100", [32, 32, 64, 64, 200, 200],
-                   num_epochs=50, train_temp=100)
-train_distillation(CIFAR(), "models/cifar-distilled-100", [64, 64, 128, 128, 256, 256],
-                   num_epochs=50, train_temp=100)
+# train_distillation(MNIST(), "models_DP/mnist-distilled-100", [32, 32, 64, 64, 200, 200],
+                   # num_epochs=5, train_temp=100)
+# train_distillation(CIFAR(), "models_DP/cifar-distilled-100", [64, 64, 128, 128, 256, 256],
+                   # num_epochs=50, train_temp=100)
