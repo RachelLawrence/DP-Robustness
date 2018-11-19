@@ -17,11 +17,18 @@ from third_party.carlini.setup_mnist import MNIST
 from third_party.carlini.setup_cifar import CIFAR
 
 from third_party.differential_privacy.dp_sgd.dp_optimizer import DPGradientDescentOptimizer
-from third_party.differential_privacy.dp_sgd.dp_optimizer import sanitizer
+from third_party.differential_privacy.dp_sgd.dp_optimizer import AmortizedGaussianSanitizer
+from third_party.differential_privacy.privacy_accountant.tf import accountant
 
 import os
 
 def train(data, file_name, params, num_epochs=50, batch_size=128, train_temp=1, init=None):
+
+    def fn(correct, predicted):
+        return tf.nn.softmax_cross_entropy_with_logits(labels=correct,
+                                                           logits=predicted/train_temp)
+    # with tf.Session() as sess:
+
     """
     Standard neural network training procedure.
     """
@@ -53,18 +60,27 @@ def train(data, file_name, params, num_epochs=50, batch_size=128, train_temp=1, 
     if init != None:
         model.load_weights(init)
 
-    def fn(correct, predicted):
-        return tf.nn.softmax_cross_entropy_with_logits(labels=correct,
-                                                       logits=predicted/train_temp)
+    eps_delta = [1.0, 1e-5]
+    default_gradient_l2norm_bound = 4.0 # Took the default value from dp_mnist.py
 
-    # Define the DP optimizer, can vary epsilon + delta.
-    # I don't know how to get the sanitizer to work but the model still trains with sanitizer = None
-    sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-    dp_sgd = DPGradientDescentOptimizer(learning_rate=0.01, eps_delta = [1.0, 1e-5], sanitizer=None)
+    priv_accountant = accountant.AmortizedAccountant(data.train_data.shape[0])
+    with_privacy = (eps_delta[0] > 0)
+    target_eps = [0.125, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0]
+
+    gaussian_sanitizer = AmortizedGaussianSanitizer(
+            priv_accountant,
+            [default_gradient_l2norm_bound / batch_size, True])
+
+    # Define the DP optimizer, can vary epsilon and delta.
+
+    # sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    sgd = tf.train.GradientDescentOptimizer(0.01) # TODO: WHAT TO DO ABOUT MINIMIZE COST?
+    dp_sgd = DPGradientDescentOptimizer(learning_rate=0.01, eps_delta = eps_delta, 
+                                                    sanitizer=gaussian_sanitizer)
     
     # Can compile the model with the new optimizer. 
     model.compile(loss=fn,
-                  optimizer=dp_sgd,
+                  optimizer=sgd,
                   metrics=['accuracy'])
     
     model.fit(data.train_data, data.train_labels,
@@ -76,6 +92,11 @@ def train(data, file_name, params, num_epochs=50, batch_size=128, train_temp=1, 
 
     if file_name != None:
         model.save(file_name)
+
+    # spent_eps_deltas = priv_accountant.get_privacy_spent(
+    #                     sess, target_eps=target_eps)
+    # for spent_eps, spent_delta in spent_eps_deltas:
+    #     print("spent privacy: eps %.4f delta %.5g\n" % (spent_eps, spent_delta))
 
     return model
 
@@ -111,12 +132,12 @@ def train_distillation(data, file_name, params, num_epochs=50, batch_size=128, t
 
     print(predicted)
     
-if not os.path.isdir('models_noDP'):
-    os.makedirs('models_noDP')
+if not os.path.isdir('models_noDP_gdTest'):
+    os.makedirs('models_noDP_gdTest')
 
 # train(CIFAR(), "models_DP/cifar", [64, 64, 128, 128, 256, 256], num_epochs=50)
 # TODO: CHANGE NUM_EPOCHS
-train(MNIST(), "models_noDP/mnist", [32, 32, 64, 64, 200, 200], num_epochs=5)
+train(MNIST(), "models_noDP_gdTest/mnist", [32, 32, 64, 64, 200, 200], num_epochs=3)
 
 # train_distillation(MNIST(), "models_DP/mnist-distilled-100", [32, 32, 64, 64, 200, 200],
                    # num_epochs=5, train_temp=100)
