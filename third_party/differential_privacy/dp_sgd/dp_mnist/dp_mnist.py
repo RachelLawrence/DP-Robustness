@@ -154,10 +154,11 @@ def MnistInput(mnist_data_file, batch_size, randomize):
     dataset = dataset.map(parser)
 
     if randomize:
-        dataset = dataset.shuffle(batch_size * 100)
+        dataset = dataset.apply(tf.data.experimental.shuffle_and_repeat(batch_size * 100))
+    else:
+        dataset = dataset.repeat()
 
     dataset = dataset.batch(batch_size)
-    dataset = dataset.repeat()
     iterator = dataset.make_one_shot_iterator()
     return iterator.get_next()
 
