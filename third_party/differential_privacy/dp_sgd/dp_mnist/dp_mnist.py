@@ -37,7 +37,7 @@ tf.flags.DEFINE_integer("batch_size", 600,
 tf.flags.DEFINE_integer("batches_per_lot", 1,
                         "Number of batches per lot.")
 # Together, batch_size and batches_per_lot determine lot_size.
-tf.flags.DEFINE_integer("num_training_steps", 100,
+tf.flags.DEFINE_integer("num_training_steps", 1000,
                         "The number of training steps."
                         "This counts number of lots.")
 
@@ -157,6 +157,7 @@ def MnistInput(mnist_data_file, batch_size, randomize):
         dataset = dataset.shuffle(batch_size * 100)
 
     dataset = dataset.batch(batch_size)
+    dataset = dataset.repeat()
     iterator = dataset.make_one_shot_iterator()
     return iterator.get_next()
 
