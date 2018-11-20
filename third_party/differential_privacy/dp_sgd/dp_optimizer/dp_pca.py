@@ -16,6 +16,8 @@
 """Differentially private optimizers.
 """
 import tensorflow as tf
+import numpy as np
+from sklearn.decomposition import PCA
 
 from third_party.differential_privacy.dp_sgd.dp_optimizer import sanitizer as san
 

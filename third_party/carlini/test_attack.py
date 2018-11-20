@@ -10,7 +10,7 @@ import numpy as np
 import time
 
 from third_party.carlini.setup_cifar import CIFAR, CIFARModel
-from third_party.carlini.setup_mnist import MNIST, MNISTModel
+from third_party.carlini.setup_mnist import MNIST, MNIST_PCA, MNISTModel
 from third_party.carlini.setup_inception import ImageNet, InceptionModel
 
 from third_party.carlini.l2_attack_orig import CarliniL2
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         # Read models from the new models_DP folder
         # Feel free to sub in the models_noDP folder if you want to also test the original 
         # Carlini models trained with 5 epochs (for a fair comparison)
-        data, model =  MNIST(), MNISTModel("models_DP/mnist", session=sess, recompile=True)
+        data, model =  MNIST_PCA(), MNISTModel("models_DP_pcaTest/mnist", session=sess, recompile=True, pca=True)
 
         # data, model =  CIFAR(), CIFARModel("models/cifar", sess)
         attack = CarliniL2(sess, model, batch_size=9, max_iterations=1000, confidence=0)

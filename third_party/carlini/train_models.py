@@ -13,7 +13,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.optimizers import SGD
 
 import tensorflow as tf
-from third_party.carlini.setup_mnist import MNIST
+from third_party.carlini.setup_mnist import MNIST, MNIST_PCA
 from third_party.carlini.setup_cifar import CIFAR
 
 from third_party.differential_privacy.dp_sgd.dp_optimizer import DPGradientDescentOptimizer
@@ -36,8 +36,7 @@ def train(data, file_name, params, num_epochs=50, batch_size=128, train_temp=1, 
 
     print(data.train_data.shape)
     
-    model.add(Conv2D(params[0], (3, 3),
-                            input_shape=data.train_data.shape[1:]))
+    model.add(Conv2D(params[0], (3, 3), input_shape=data.train_data.shape[1:]))
     model.add(Activation('relu'))
     model.add(Conv2D(params[1], (3, 3)))
     model.add(Activation('relu'))
@@ -62,9 +61,7 @@ def train(data, file_name, params, num_epochs=50, batch_size=128, train_temp=1, 
 
     eps_delta = [1.0, 1e-5]
     default_gradient_l2norm_bound = 4.0 # Took the default value from dp_mnist.py
-
     priv_accountant = accountant.AmortizedAccountant(data.train_data.shape[0])
-    with_privacy = (eps_delta[0] > 0)
     target_eps = [0.125, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0]
 
     gaussian_sanitizer = AmortizedGaussianSanitizer(
@@ -73,14 +70,14 @@ def train(data, file_name, params, num_epochs=50, batch_size=128, train_temp=1, 
 
     # Define the DP optimizer, can vary epsilon and delta.
 
-    # sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-    sgd = tf.train.GradientDescentOptimizer(0.01) # TODO: WHAT TO DO ABOUT MINIMIZE COST?
+    sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    # sgd = tf.train.GradientDescentOptimizer(0.01) # TODO: WHAT TO DO ABOUT MINIMIZE COST?
     dp_sgd = DPGradientDescentOptimizer(learning_rate=0.01, eps_delta = eps_delta, 
                                                     sanitizer=gaussian_sanitizer)
     
     # Can compile the model with the new optimizer. 
     model.compile(loss=fn,
-                  optimizer=sgd,
+                  optimizer=dp_sgd,
                   metrics=['accuracy'])
     
     model.fit(data.train_data, data.train_labels,
@@ -132,12 +129,12 @@ def train_distillation(data, file_name, params, num_epochs=50, batch_size=128, t
 
     print(predicted)
     
-if not os.path.isdir('models_noDP_gdTest'):
-    os.makedirs('models_noDP_gdTest')
+if not os.path.isdir('models_DP_pcaTest'):
+    os.makedirs('models_DP_pcaTest')
 
 # train(CIFAR(), "models_DP/cifar", [64, 64, 128, 128, 256, 256], num_epochs=50)
 # TODO: CHANGE NUM_EPOCHS
-train(MNIST(), "models_noDP_gdTest/mnist", [32, 32, 64, 64, 200, 200], num_epochs=3)
+train(MNIST_PCA(), "models_DP_pcaTest/mnist", [32, 32, 64, 64, 200, 200], num_epochs=5)
 
 # train_distillation(MNIST(), "models_DP/mnist-distilled-100", [32, 32, 64, 64, 200, 200],
                    # num_epochs=5, train_temp=100)
