@@ -69,7 +69,7 @@ if __name__ == "__main__":
     with tf.Session() as sess:
         # data, model =  MNIST(), MNISTModel("models/mnist", sess)
         # data, model =  CIFAR(), CIFARModel("models/cifar", sess)
-        data, model = MNIST(), Model("../output/dp_sgd/dp_mnist")
+        data, model = MNIST(), Model("trained/dp_mnist")
         attack = CarliniL2(sess, model, max_iterations=1000, confidence=0)
         # attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10,
         #                   largest_const=15)
