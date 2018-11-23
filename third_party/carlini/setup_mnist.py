@@ -191,4 +191,5 @@ class MNISTModel:
         self.model = model
 
     def predict(self, data):
+        print(self.model(data))
         return self.model(data)

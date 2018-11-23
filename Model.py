@@ -2,8 +2,12 @@ import os
 
 import tensorflow as tf
 
-def load_trained_mnist(ckpt, inputs):
-    importer = tf.train.import_meta_graph(ckpt + '.meta', import_scope='mnist',
+
+def load_trained_mnist(ckpt, inputs, suffix=''):
+    suffix = str(suffix)
+    if suffix:
+        suffix = '_' + suffix
+    importer = tf.train.import_meta_graph(ckpt + '.meta', import_scope='mnist' + suffix,
                                           input_map={'dp_mnist_input': inputs})
     output = tf.get_collection('dp_mnist_output')[0]
 
@@ -12,11 +16,13 @@ def load_trained_mnist(ckpt, inputs):
 
     return output
 
+
 def compute_model_path(model_path: str) -> str:
     ending = '.meta'
     if model_path.endswith(ending):
         model_path = model_path[:-len(ending)]
     return model_path
+
 
 class Model:
     def __init__(self, model_path):
@@ -26,13 +32,11 @@ class Model:
         self.num_channels = 1
         self.num_labels = 10
 
+        self.num_copies = 0
+
     def predict(self, input_tensor):
-        with tf.Session() as sess:
-            init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
-            _ = sess.run([init_op])
-            mnist_output = load_trained_mnist(self.ckpt, input_tensor)
-            output = sess.run([mnist_output])
-            return tf.convert_to_tensor(output[0])
+        self.num_copies = self.num_copies + 1
+        return load_trained_mnist(self.ckpt, input_tensor, self.num_copies)
 
     # def predict(self, input_tensor):
     #     # sess = tf.get_default_session()
@@ -50,5 +54,5 @@ class Model:
     #         importer.restore(sess, self.ckpt)
     #         init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
     #         _, output = sess.run([init_op, mnist_output])
-            
+
     #         return tf.convert_to_tensor(output)

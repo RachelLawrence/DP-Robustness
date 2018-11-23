@@ -26,14 +26,15 @@ def compute_model_path(model_path: str) -> str:
 
 
 class Model:
-    def __init__(self, model_path):
+    def __init__(self, model_path, sess):
         self.model_path = compute_model_path(model_path)
         self.image_size = 28
         self.num_channels = 1
         self.num_labels = 10
+        self.sess = sess
 
     def predict(self, input_tensor):
-        with tf.Session() as sess:
+        with self.sess.as_default() as sess:
             init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
             mnist_output = load_trained_mnist(self.model_path, input_tensor)
             _, output = sess.run([init_op, mnist_output])
@@ -41,12 +42,13 @@ class Model:
 
 
 def main():
-    model = Model("../output/dp_sgd/dp_mnist/ckpt")
-    all_ones = np.ones((1, IMAGE_SIZE ** 2))
-    dummy_input = tf.constant(all_ones, dtype=tf.float32)
+    with tf.Session() as sess:
+        model = Model("./trained/dp_mnist/ckpt", sess)
+        all_ones = np.ones((1, IMAGE_SIZE ** 2))
+        dummy_input = tf.constant(all_ones, dtype=tf.float32)
 
-    output = model.predict(dummy_input)
-    print(output)
+        output = model.predict(dummy_input)
+        print(output)
 
 
     # parser = argparse.ArgumentParser(description='Run the trained MNIST model')

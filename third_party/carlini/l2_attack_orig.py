@@ -66,7 +66,7 @@ class CarliniL2:
         shape = (batch_size,image_size,image_size,num_channels)
         
         # the variable we're going to optimize over
-        modifier = tf.Variable(np.zeros(shape,dtype=np.float32))
+        modifier = tf.Variable(np.ones(shape,dtype=np.float32), dtype=tf.float32)
 
         # these are variables to be more efficient in sending data to tf
         self.timg = tf.Variable(np.zeros(shape), dtype=tf.float32)
@@ -79,8 +79,8 @@ class CarliniL2:
         self.assign_const = tf.placeholder(tf.float32, [batch_size])
         
         # the resulting image, tanh'd to keep bounded from boxmin to boxmax
-        self.boxmul = (boxmax - boxmin) / 2.
-        self.boxplus = (boxmin + boxmax) / 2.
+        self.boxmul = (boxmax - boxmin) / float(2.)
+        self.boxplus = (boxmin + boxmax) / float(2.)
         self.newimg = tf.tanh(modifier + self.timg) * self.boxmul + self.boxplus
         
         # prediction BEFORE-SOFTMAX of the model
@@ -104,7 +104,7 @@ class CarliniL2:
         self.loss2 = tf.reduce_sum(self.l2dist)
         self.loss1 = tf.reduce_sum(self.const*loss1)
         self.loss = self.loss1+self.loss2
-        
+
         # Setup the adam optimizer and keep track of variables we're creating
         start_vars = set(x.name for x in tf.global_variables())
         optimizer = tf.train.AdamOptimizer(self.LEARNING_RATE)
@@ -130,6 +130,7 @@ class CarliniL2:
         print('go up to',len(imgs))
         for i in range(0,len(imgs),self.batch_size):
             print('tick',i)
+            print('targets:', targets[i:i+self.batch_size])
             r.extend(self.attack_batch(imgs[i:i+self.batch_size], targets[i:i+self.batch_size]))
         return np.array(r)
 
