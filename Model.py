@@ -1,19 +1,20 @@
 import os
-import numpy as np
+
 import tensorflow as tf
 
-def load_trained_mnist(ckpt, inputs, sess, suffix=''):
+
+def load_trained_mnist(ckpt, inputs, suffix=''):
     suffix = str(suffix)
     if suffix:
         suffix = '_' + suffix
     importer = tf.train.import_meta_graph(ckpt + '.meta', import_scope='mnist' + suffix,
                                           input_map={'dp_mnist_input': inputs})
     output = tf.get_collection('dp_mnist_output')[0]
-    print(output)
 
+    sess = tf.get_default_session()
     importer.restore(sess, ckpt)
 
-    return output, sess, inputs
+    return output
 
 
 def compute_model_path(model_path: str) -> str:
@@ -33,11 +34,9 @@ class Model:
 
         self.num_copies = 0
 
-    def predict(self, input_tensor, sess):
-        print(np.array(input_tensor))
+    def predict(self, input_tensor):
         self.num_copies = self.num_copies + 1
-        output = load_trained_mnist(self.ckpt, input_tensor, sess, self.num_copies)
-        return output[0], output[1], input_tensor
+        return load_trained_mnist(self.ckpt, input_tensor, self.num_copies)
 
     # def predict(self, input_tensor):
     #     # sess = tf.get_default_session()
