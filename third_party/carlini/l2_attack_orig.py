@@ -6,6 +6,7 @@
 ## contained in the LICENCE file in this directory.
 
 import sys
+import pdb
 import tensorflow as tf
 import numpy as np
 
@@ -84,7 +85,7 @@ class CarliniL2:
         self.newimg = tf.tanh(modifier + self.timg) * self.boxmul + self.boxplus
         
         # prediction BEFORE-SOFTMAX of the model
-        self.output = model.predict(self.newimg)
+        self.output, self.sess, self.input_tensor = model.predict(self.newimg, self.sess)
         
         # distance to the input data
         self.l2dist = tf.reduce_sum(tf.square(self.newimg-(tf.tanh(self.timg) * self.boxmul + self.boxplus)),[1,2,3])
@@ -188,9 +189,13 @@ class CarliniL2:
             prev = np.inf
             for iteration in range(self.MAX_ITERATIONS):
                 # perform the attack 
-                _, l, l2s, scores, nimg = self.sess.run([self.train, self.loss, 
+                _, l, l2s, scores, nimg, input_tensor = self.sess.run([self.train, self.loss, 
                                                          self.l2dist, self.output, 
-                                                         self.newimg])
+                                                         self.newimg, self.input_tensor])
+
+                # print(scores, real, other, nimg[0][0])
+                # np.savetxt("newimg.csv", nimg.reshape(28, 28), delimiter=",")
+                pdb.set_trace()
 
                 if np.all(scores>=-.0001) and np.all(scores <= 1.0001):
                     if np.allclose(np.sum(scores,axis=1), 1.0, atol=1e-3):

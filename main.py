@@ -13,11 +13,12 @@ import tensorflow as tf
 from Model import Model
 from third_party.carlini.l2_attack_orig import CarliniL2
 # from third_party.carlini.setup_cifar import CIFAR, CIFARModel
-from third_party.carlini.setup_mnist import MNIST
+from third_party.carlini.setup_mnist import MNIST, MNISTModel
 
 
 # from third_party.carlini.setup_inception import ImageNet, InceptionModel
 
+tf.enable_eager_execution()
 
 def show(img):
     """
@@ -73,22 +74,24 @@ if __name__ == "__main__":
         init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
         _ = sess.run([init_op])
         data, model = MNIST(), Model("trained/dp_mnist")
+        # data, model =  MNIST(), MNISTModel("models_DP/mnist", session=sess)
         inputs, targets = generate_data(data, samples=1, targeted=True,
                                         start=0, inception=False)
 
         plc = tf.placeholder_with_default(tf.zeros((1, 28, 28, 1), dtype=tf.float32), shape=(None, 28, 28, 1),
                                           name="side_in")
 
-        mnist_output = model.predict(plc)
+        mnist_output = model.predict(plc, sess)
 
         def run_model(the_inputs):
             the_inputs = the_inputs.reshape((-1, 28, 28, 1))
+            print(the_inputs)
             output = sess.run([mnist_output], feed_dict={plc: the_inputs})
-            print(' Output vector:', output[0])
+            print('Output vector:', output[0])
             print('Classification:', np.argmax(output[0][0]))
             return output
 
-        run_model(inputs)
+        # run_model(inputs)
 
         attack = CarliniL2(sess, model, max_iterations=1000, confidence=0)
         timestart = time.time()
