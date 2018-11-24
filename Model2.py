@@ -24,22 +24,20 @@ class Model:
         self.image_size = 28
         self.num_channels = 1
         self.num_labels = 10
-
         self.num_copies = 0
 
-        if self.num_copies:
-            self.num_copies = '_' + self.num_copies
         importer = tf.train.import_meta_graph(self.ckpt + '.meta')
-        weightVars = tf.trainable_variables()
+        weightVars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
 
-        init = tf.global_variables_initializer()
-        sess.run(init)
-        weights = [sess.run(weight) for weight in weightVars]
+        importer.restore(sess, self.ckpt)
+        weights = sess.run(weightVars)
+
+        print(weights[0], weights[1])
         weightsLayer0 = [weights[0]]
         weightsLayer1 = [weights[1]]
 
         model = Sequential()
-        model.add(Dense(1000, use_bias=False, input_dim=28*28))
+        model.add(Dense(1000, use_bias=False, input_dim=28**2))
         model.add(Dense(10, use_bias=False, input_dim=1000))
         model.layers[0].set_weights(weightsLayer0)
         model.layers[1].set_weights(weightsLayer1)

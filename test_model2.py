@@ -22,10 +22,10 @@ with tf.Session() as sess:
 
     def run_model(the_inputs):
         the_inputs = the_inputs.reshape((-1, 28, 28, 1))
-        print(the_inputs)
         output = sess.run([mnist_output], feed_dict={plc: the_inputs})
         print('Output vector:', output[0])
         print('Classification:', np.argmax(output[0][0]))
         return output
 
+    run_model(my_data)
     run_model(my_data)

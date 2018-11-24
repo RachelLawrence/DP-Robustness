@@ -44,7 +44,7 @@ class Model:
 
 def main():
     with tf.Session() as sess:
-        model = Model("trained/dp_mnist")
+        model = Model("dp_sgd_out/noPCA")
         all_ones = np.ones((1, IMAGE_SIZE, IMAGE_SIZE)) * 0.1
         dummy_input = tf.constant(all_ones, dtype=tf.float32)
 
@@ -58,7 +58,6 @@ def main():
 
         def run_model(the_inputs):
             the_inputs = the_inputs.reshape((-1, 28, 28, 1))
-            print(the_inputs)
             output = sess.run([mnist_output], feed_dict={plc: the_inputs})
             print('Output vector:', output[0])
             print('Classification:', np.argmax(output[0][0]))
