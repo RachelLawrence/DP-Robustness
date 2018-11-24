@@ -78,14 +78,16 @@ class CarliniL2:
         self.assign_timg = tf.placeholder(tf.float32, shape)
         self.assign_tlab = tf.placeholder(tf.float32, (batch_size,num_labels))
         self.assign_const = tf.placeholder(tf.float32, [batch_size])
+        self.assign_newimg = tf.placeholder(tf.float32, shape)
+
         
         # the resulting image, tanh'd to keep bounded from boxmin to boxmax
         self.boxmul = (boxmax - boxmin) / float(2.)
         self.boxplus = (boxmin + boxmax) / float(2.)
         self.newimg = tf.tanh(modifier + self.timg) * self.boxmul + self.boxplus
-        
+
         # prediction BEFORE-SOFTMAX of the model
-        self.output, self.sess, self.input_tensor = model.predict(self.newimg, self.sess)
+        self.output = model.predict(tf.convert_to_tensor(self.newimg))
         
         # distance to the input data
         self.l2dist = tf.reduce_sum(tf.square(self.newimg-(tf.tanh(self.timg) * self.boxmul + self.boxplus)),[1,2,3])
@@ -184,18 +186,15 @@ class CarliniL2:
             # set the variables so that we don't have to send them over again
             self.sess.run(self.setup, {self.assign_timg: batch,
                                        self.assign_tlab: batchlab,
-                                       self.assign_const: CONST})
-            
+                                       self.assign_const: CONST,
+                                       self.assign_newimg: batch})
+
             prev = np.inf
             for iteration in range(self.MAX_ITERATIONS):
                 # perform the attack 
-                _, l, l2s, scores, nimg, input_tensor = self.sess.run([self.train, self.loss, 
+                _, l, l2s, scores, nimg = self.sess.run([self.train, self.loss, 
                                                          self.l2dist, self.output, 
-                                                         self.newimg, self.input_tensor])
-
-                # print(scores, real, other, nimg[0][0])
-                # np.savetxt("newimg.csv", nimg.reshape(28, 28), delimiter=",")
-                pdb.set_trace()
+                                                         self.newimg])
 
                 if np.all(scores>=-.0001) and np.all(scores <= 1.0001):
                     if np.allclose(np.sum(scores,axis=1), 1.0, atol=1e-3):
