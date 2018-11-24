@@ -31,13 +31,13 @@ class Model:
 
         importer.restore(sess, self.ckpt)
         weights = sess.run(weightVars)
+        print(weights)
 
-        print(weights[0], weights[1])
         weightsLayer0 = [weights[0]]
         weightsLayer1 = [weights[1]]
 
         model = Sequential()
-        model.add(Dense(1000, use_bias=False, input_dim=28**2))
+        model.add(Dense(1000, use_bias=False, activation='relu', input_dim=28**2))
         model.add(Dense(10, use_bias=False, input_dim=1000))
         model.layers[0].set_weights(weightsLayer0)
         model.layers[1].set_weights(weightsLayer1)

@@ -28,4 +28,3 @@ with tf.Session() as sess:
         return output
 
     run_model(my_data)
-    run_model(my_data)
