@@ -1,0 +1,24 @@
+How to train a model:
+
+Run dp_mnist.py with the appropriate input arguments. The most important ones are:
+
+--training_data_path=dp_data/mnist_train.tfrecord ............. don't change this one
+--eval_data_path=dp_data/mnist_test.tfrecord .................. don't change this one
+--save_path=trained_models/pca_eps_0.01_200 ................... naming convention is (pca/no_pca)_eps_(epsilon value)_(num_training_steps)
+--eps=1     ................................................... set to 0 for no DP. A little DP is around 1; a lot is 0.1
+--num_training_steps=600 ...................................... best results so far have been with 600. > 85% accuracy seems to be the sweet spot for adversarial examples.
+--projection_dimensions=60 .................................... set to 60 to do PCA, or 0 to not do PCA
+
+
+
+Great! Now that you have a trained model, you can attack it.
+    Models WITH PCA are attacked using main.py
+    Models WITHOUT PCA are attacked using main_model2.py
+
+These should work pretty much out of the box: just change the file path on line 76 to point to your trained model.
+
+
+
+
+Right now everything is set to the parameters that seemed to work best for me, but feel free to experiment with the
+parameters in the call to "CarliniL2" in main (or main_model2), and also the parameters in dp_mnist.
