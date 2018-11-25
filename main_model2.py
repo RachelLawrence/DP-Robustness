@@ -10,7 +10,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from Model2 import Model
+from Model2 import Model2
 from third_party.carlini.l2_attack_model2 import CarliniL2
 # from third_party.carlini.setup_cifar import CIFAR, CIFARModel
 from third_party.carlini.setup_mnist import MNIST, MNISTModel
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
         _ = sess.run([init_op])
         # data, model = MNIST(), Model("dp_sgd_out/noPCA")
-        data, model = MNIST(), Model("../output/dp_sgd/dp_mnist/no_args")
+        data, model = MNIST(), Model2("../output/dp_sgd/dp_mnist/no_args")
         # data, model =  MNIST(), MNISTModel("models_DP/mnist", session=sess)
         inputs, targets = generate_data(data, samples=1, targeted=True,
                                         start=0, inception=False)

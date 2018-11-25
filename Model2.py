@@ -16,7 +16,7 @@ def compute_model_path(model_path: str) -> str:
     return model_path
 
 
-class Model:
+class Model2:
     def __init__(self, model_path):
         sess = tf.Session()
         self.model_path = compute_model_path(model_path)
