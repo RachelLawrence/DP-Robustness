@@ -108,8 +108,3 @@ if __name__ == "__main__":
             run_model(adv_tensor)
             print("Total distortion:", np.sum((adv[i] - inputs[i]) ** 2) ** .5)
 
-            print("Last:")
-            show(last_image)
-            run_model(last_image.astype(np.float32))
-            print("Total distortion:", np.sum((last_image[i] - inputs[i]) ** 2) ** .5)
-
