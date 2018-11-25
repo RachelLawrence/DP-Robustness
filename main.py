@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
         init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
         _ = sess.run([init_op])
-        data, model = MNIST(), Model("../output/dp_sgd/dp_mnist/pca_with_dp") #Model("trained/dp_mnist")
+        data, model = MNIST(), Model("trained_models/pca_eps_0.01_600") #Model("trained/dp_mnist")
         inputs, targets = generate_data(data, samples=1, targeted=True,
                                         start=0, inception=False)
 
