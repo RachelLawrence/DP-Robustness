@@ -5,8 +5,10 @@
 ## This program is licenced under the BSD 2-Clause licence,
 ## contained in the LICENCE file in this directory.
 
-import numpy as np
+import sys
+import pdb
 import tensorflow as tf
+import numpy as np
 
 BINARY_SEARCH_STEPS = 9  # number of times to adjust the constant with binary search
 MAX_ITERATIONS = 10000  # number of iterations to perform gradient descent
@@ -17,18 +19,6 @@ CONFIDENCE = 0  # how strong the adversarial example should be
 INITIAL_CONST = 1e-3  # the initial constant c to pick as a first guess
 
 
-def show(img):
-    """
-    Show MNSIT digits in the console.
-    """
-    remap = "  .*#" + "#" * 100
-    img = (img.flatten() + .5) * 3
-    if len(img) != 784: return
-    print("START")
-    for i in range(28):
-        print("".join([remap[int(round(x))] for x in img[i * 28:i * 28 + 28]]))
-
-
 class CarliniL2:
     def __init__(self, sess, model, batch_size=1, confidence=CONFIDENCE,
                  targeted=TARGETED, learning_rate=LEARNING_RATE,
@@ -37,8 +27,8 @@ class CarliniL2:
                  initial_const=INITIAL_CONST,
                  boxmin=-0.5, boxmax=0.5):
         """
-        The L_2 optimized attack. 
-        This attack is the most efficient and should be used as the primary 
+        The L_2 optimized attack.
+        This attack is the most efficient and should be used as the primary
         attack to evaluate potential defenses.
         Returns adversarial examples for the supplied model.
         confidence: Confidence of adversarial examples: higher produces examples
@@ -48,7 +38,7 @@ class CarliniL2:
         learning_rate: The learning rate for the attack algorithm. Smaller values
           produce better results but are slower to converge.
         binary_search_steps: The number of times we perform binary search to
-          find the optimal tradeoff-constant between distance and confidence. 
+          find the optimal tradeoff-constant between distance and confidence.
         max_iterations: The maximum number of iterations. Larger values are more
           accurate; setting too small will require a large learning rate and will
           produce poor results.
@@ -81,56 +71,40 @@ class CarliniL2:
         modifier = tf.Variable(np.ones(shape, dtype=np.float32), dtype=tf.float32)
 
         # these are variables to be more efficient in sending data to tf
-        self.timg = tf.Variable(np.ones(shape), dtype=tf.float32)
-        self.tlab = tf.Variable(np.ones((batch_size, num_labels)), dtype=tf.float32)
-        self.const = tf.Variable(np.ones(batch_size), dtype=tf.float32)
+        self.timg = tf.Variable(np.zeros(shape), dtype=tf.float32)
+        self.tlab = tf.Variable(np.zeros((batch_size, num_labels)), dtype=tf.float32)
+        self.const = tf.Variable(np.zeros(batch_size), dtype=tf.float32)
 
         # and here's what we use to assign them
         self.assign_timg = tf.placeholder(tf.float32, shape)
         self.assign_tlab = tf.placeholder(tf.float32, (batch_size, num_labels))
         self.assign_const = tf.placeholder(tf.float32, [batch_size])
+        self.assign_newimg = tf.placeholder(tf.float32, shape)
 
         # the resulting image, tanh'd to keep bounded from boxmin to boxmax
         self.boxmul = (boxmax - boxmin) / float(2.)
         self.boxplus = (boxmin + boxmax) / float(2.)
         self.newimg = tf.tanh(modifier + self.timg) * self.boxmul + self.boxplus
 
-        # This part is broken
-        self.output_tensor = model.predict(self.newimg)
+        # prediction BEFORE-SOFTMAX of the model
+        self.output = model.predict(tf.convert_to_tensor(self.newimg))
 
         # distance to the input data
         self.l2dist = tf.reduce_sum(tf.square(self.newimg - (tf.tanh(self.timg) * self.boxmul + self.boxplus)),
                                     [1, 2, 3])
 
-        # # naive solution: loss1 should be smaller when maximum other is much larger than label class
-        # max_other_value = tf.reduce_max((1 - self.tlab) * self.output_tensor - (self.tlab * 10000), 1)
-        # label_value = tf.reduce_sum((self.tlab) * self.output_tensor, 1)
-        output_max = tf.abs(tf.reduce_max(self.output_tensor, 1))
-        output_min = tf.abs(tf.reduce_min(self.output_tensor, 1))
-        # value_diff = tf.reshape(max_other_value - label_value, [])
-        def zeroval(): return tf.constant(.1, dtype=tf.float32)
-        # def posval(): return tf.constant(0, dtype=tf.float32)
-        # def negval(): return tf.abs(value_diff)
-        # loss1 = tf.case(
-        #     {tf.less(value_diff, 0): negval, tf.greater(value_diff, 0): posval}, default=zeroval, exclusive=True) + self.CONFIDENCE
-
         # compute the probability of the label class versus the maximum other
-        real = tf.reduce_sum(self.tlab * self.output_tensor, 1)
-        other = tf.reduce_max((1 - self.tlab) * self.output_tensor - (self.tlab * 10000), 1)
+        real = tf.reduce_sum((self.tlab) * self.output, 1)
+        other = tf.reduce_max((1 - self.tlab) * self.output - (self.tlab * 10000), 1)
 
         if self.TARGETED:
-            # if targeted, optimize for making the other class most likely
+            # if targetted, optimize for making the other class most likely
             loss1 = tf.maximum(0.0, other - real + self.CONFIDENCE)
         else:
             # if untargeted, optimize for making this class least likely.
             loss1 = tf.maximum(0.0, real - other + self.CONFIDENCE)
 
-        def posval(): return loss1
-
-        loss1 = tf.case(
-                {tf.greater(tf.reshape(output_max+output_min, []), 0): posval}, default=zeroval, exclusive=True)
-
-            # sum up the losses
+        # sum up the losses
         self.loss2 = tf.reduce_sum(self.l2dist)
         self.loss1 = tf.reduce_sum(self.const * loss1)
         self.loss = self.loss1 + self.loss2
@@ -150,7 +124,7 @@ class CarliniL2:
 
         self.init = tf.variables_initializer(var_list=[modifier] + new_vars)
 
-    def attack(self, imgs, targets, model):
+    def attack(self, imgs, targets):
         """
         Perform the L_2 attack on the given images for the given targets.
         If self.targeted is true, then the targets represents the target labels.
@@ -184,7 +158,6 @@ class CarliniL2:
 
         batch_size = self.batch_size
 
-        orig_imgs = imgs
         # convert to tanh-space
         imgs = np.arctanh((imgs - self.boxplus) / self.boxmul * 0.999999)
 
@@ -215,17 +188,18 @@ class CarliniL2:
             # set the variables so that we don't have to send them over again
             self.sess.run(self.setup, {self.assign_timg: batch,
                                        self.assign_tlab: batchlab,
-                                       self.assign_const: CONST})
+                                       self.assign_const: CONST,
+                                       self.assign_newimg: batch})
 
             prev = np.inf
             for iteration in range(self.MAX_ITERATIONS):
                 # perform the attack
                 _, l, l2s, scores, nimg = self.sess.run([self.train, self.loss,
-                                                         self.l2dist, self.output_tensor,
+                                                         self.l2dist, self.output,
                                                          self.newimg])
 
                 if np.all(scores >= -.0001) and np.all(scores <= 1.0001):
-                    if np.allclose(np.sum(scores, axis=0), 1.0, atol=1e-3):
+                    if np.allclose(np.sum(scores, axis=1), 1.0, atol=1e-3):
                         if not self.I_KNOW_WHAT_I_AM_DOING_AND_WANT_TO_OVERRIDE_THE_PRESOFTMAX_CHECK:
                             raise Exception(
                                 "The output of model.predict should return the pre-softmax layer. It looks like you are returning the probability vector (post-softmax). If you are sure you want to do that, set attack.I_KNOW_WHAT_I_AM_DOING_AND_WANT_TO_OVERRIDE_THE_PRESOFTMAX_CHECK = True")
@@ -268,5 +242,4 @@ class CarliniL2:
 
         # return the best solution found
         o_bestl2 = np.array(o_bestl2)
-
         return o_bestattack
