@@ -7,9 +7,12 @@ def load_trained_mnist(ckpt, inputs, suffix=''):
     suffix = str(suffix)
     if suffix:
         suffix = '_' + suffix
-    importer = tf.train.import_meta_graph(ckpt + '.meta', import_scope='mnist' + suffix,
+    import_scope = 'mnist' + suffix
+
+    importer = tf.train.import_meta_graph(ckpt + '.meta', import_scope=import_scope,
                                           input_map={'dp_mnist_input': inputs})
-    output = tf.get_collection('dp_mnist_output')[0]
+    outputs = tf.get_collection('dp_mnist_output')
+    output = next(filter(lambda x: x.name.startswith(import_scope + '/'), reversed(outputs)))
 
     sess = tf.get_default_session()
     importer.restore(sess, ckpt)

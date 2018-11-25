@@ -66,6 +66,7 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
     return inputs, targets
 
 
+
 if __name__ == "__main__":
 
     with tf.Session() as sess:
@@ -73,11 +74,10 @@ if __name__ == "__main__":
         init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
         _ = sess.run([init_op])
         data, model = MNIST(), Model("trained/dp_mnist")
-        inputs, targets = generate_data(data, samples=1, targeted=True,
+        inputs, targets = generate_data(data, samples=1, targeted=False,
                                         start=0, inception=False)
 
-        plc = tf.placeholder_with_default(tf.zeros((1, 28, 28, 1), dtype=tf.float32), shape=(None, 28, 28, 1),
-                                          name="side_in")
+        plc = tf.placeholder_with_default(tf.zeros((1, 28, 28, 1), dtype=tf.float32), shape=(None, 28, 28, 1))
 
         mnist_output = model.predict(plc)
 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
         attack = CarliniL2(sess, model, max_iterations=1000, confidence=0)
         timestart = time.time()
-        adv = attack.attack(inputs, targets)
+        adv, last_image = attack.attack(inputs, targets, model)
         timeend = time.time()
 
         print("Took", timeend - timestart, "seconds to run", len(inputs), "samples.")
@@ -106,5 +106,10 @@ if __name__ == "__main__":
             show(adv[i])
             adv_tensor = adv[i:i + 1][0].astype(np.float32)
             run_model(adv_tensor)
-
             print("Total distortion:", np.sum((adv[i] - inputs[i]) ** 2) ** .5)
+
+            print("Last:")
+            show(last_image)
+            run_model(last_image.astype(np.float32))
+            print("Total distortion:", np.sum((last_image[i] - inputs[i]) ** 2) ** .5)
+
