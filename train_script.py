@@ -22,7 +22,6 @@ for pca in pcaInputs:
 				cmd.append('--save_path=%s' % savePath)
 				cmd.append('--eps=%s' % eps)
 				cmd.append('--end_eps=%s' % eps)
-				cmd.append('--sigma=0')
 				cmd.append('--num_training_steps=%s' % numTrainingSteps)
 				cmd.append('--projection_dimensions=%s' % pca[1])
 				cmd.append('--accountant_type=Amortized')
