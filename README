@@ -8,6 +8,7 @@ Run dp_mnist.py with the appropriate input arguments. The most important ones ar
 --eps=1     ................................................... set to 0 for no DP. A little DP is around 1; a lot is 0.1
 --num_training_steps=600 ...................................... best results so far have been with 600. > 85% accuracy seems to be the sweet spot for adversarial examples.
 --projection_dimensions=60 .................................... set to 60 to do PCA, or 0 to not do PCA
+--accountant_type=Amortizeed................................... MUST set this if we want the --eps flag to take effect
 
 
 
