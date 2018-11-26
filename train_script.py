@@ -2,7 +2,7 @@ import os
 import subprocess
 import tensorflow as tf
 
-pcaInputs = [('no_pca', '60')]
+pcaInputs = [('no_pca', '0')]
 epsInputs = ['0', '0.1', '0.2', '0.5', '1', '2', '4'] 
 numTrainingStepsInputs = ['600']
 
