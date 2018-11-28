@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
         print("EPSILON = %s" % eps)
         resultsDict = {}
-        modelPath = "trained_models/pca_eps_%s_600_amortized" % eps
+        modelPath = "trained_models/no_pca_eps_%s_600_amortized" % eps
         data, model = MNIST(), Model(modelPath) 
         inputs, targets = generate_data(data, samples=num_samples, targeted=True,
                                         start=0, inception=False)
@@ -100,6 +100,6 @@ if __name__ == "__main__":
 
         resultsDF = pd.DataFrame.from_dict(resultsDict, orient='index')
         print(resultsDF)
-        saveFile = "results/sample%d/pca_eps_%s_600_amortized.json" % (num_samples, eps)
+        saveFile = "results/sample%d/no_pca_eps_%s_600_amortized.json" % (num_samples, eps)
         resultsDF.to_json(path_or_buf=saveFile)
     sess.close()

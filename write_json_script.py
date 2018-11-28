@@ -2,8 +2,8 @@ import os
 import subprocess
 import tensorflow as tf
 
-epsInputs = ['0.1', '0.2', '0.5', '1', '2', '4'] 
-numSamples = [10, 100]
+epsInputs = ['1', '2', '4'] 
+numSamples = [100]
 
 for num in numSamples:
 	for eps in epsInputs:

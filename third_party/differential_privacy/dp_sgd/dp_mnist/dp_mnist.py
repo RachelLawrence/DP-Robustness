@@ -27,6 +27,7 @@ import tensorflow as tf
 
 from third_party.differential_privacy.dp_sgd.dp_optimizer import dp_optimizer
 from third_party.differential_privacy.dp_sgd.dp_optimizer import dp_pca
+from third_party.differential_privacy.dp_sgd.dp_optimizer import dp_jl
 from third_party.differential_privacy.dp_sgd.dp_optimizer import sanitizer
 from third_party.differential_privacy.dp_sgd.dp_optimizer import utils
 from third_party.differential_privacy.privacy_accountant.tf import accountant
@@ -57,6 +58,8 @@ tf.flags.DEFINE_float("lr_saturate_epochs", 0,
 # For searching parameters
 tf.flags.DEFINE_integer("projection_dimensions", 60,
                         "PCA projection dimensions, or 0 for no projection.")
+tf.flags.DEFINE_string("projection_type", "PCA",
+                        "Defaults to PCA, can also input JL.")
 tf.flags.DEFINE_integer("num_hidden_layers", 1,
                         "Number of hidden layers in the network")
 tf.flags.DEFINE_integer("hidden_layer_num_units", 1000,
@@ -243,6 +246,7 @@ def Train(mnist_train_file, mnist_test_file, network_parameters, num_steps,
               "task_id": 0,
               "batch_size": FLAGS.batch_size,
               "projection_dimensions": FLAGS.projection_dimensions,
+              "projection_type": FLAGS.projection_type,
               "default_gradient_l2norm_bound":
                   network_parameters.default_gradient_l2norm_bound,
               "num_hidden_layers": FLAGS.num_hidden_layers,
@@ -321,12 +325,21 @@ def Train(mnist_train_file, mnist_test_file, network_parameters, num_steps,
                     gaussian_sanitizer, [FLAGS.pca_eps, FLAGS.pca_delta], pca_sigma)
                 assign_pca_proj = tf.assign(projection, pca_projection)
                 init_ops.append(assign_pca_proj)
+        elif network_parameters.projection_type == "JL":
+            with tf.variable_scope("jl"):
+                # Compute JL transform / randomized projection.
+                all_data, _ = MnistInput(mnist_train_file, NUM_TRAINING_IMAGES, False)
+                jl_projection = dp_jl.ComputeDPRandomProjection(
+                    network_parameters.projection_dimensions)
+                assign_jl_proj = tf.assign(projection, jl_projection)
+                init_ops.append(assign_jl_proj)
 
         # Add global_step
         global_step = tf.Variable(0, dtype=tf.int32, trainable=False,
                                   name="global_step")
 
         if with_privacy:
+            sys.stderr.write("With Privacy \n")
             gd_op = dp_optimizer.DPGradientDescentOptimizer(
                 lr,
                 [eps, delta],
@@ -335,6 +348,7 @@ def Train(mnist_train_file, mnist_test_file, network_parameters, num_steps,
                 batches_per_lot=FLAGS.batches_per_lot).minimize(
                 cost, global_step=global_step)
         else:
+            sys.stderr.write("Without Privacy \n")
             gd_op = tf.train.GradientDescentOptimizer(lr).minimize(cost)
 
         saver = tf.train.Saver()
@@ -367,6 +381,7 @@ def Train(mnist_train_file, mnist_test_file, network_parameters, num_steps,
                                      FLAGS.lr_saturate_epochs, epoch)
             curr_eps = utils.VaryRate(FLAGS.eps, FLAGS.end_eps,
                                       FLAGS.eps_saturate_epochs, epoch)
+            sys.stderr.write("curr_eps: %s, " % curr_eps)
             for _ in xrange(FLAGS.batches_per_lot):
                 _ = sess.run(
                     [gd_op], feed_dict={lr: curr_lr, eps: curr_eps, delta: FLAGS.delta})
@@ -476,7 +491,7 @@ def main(_):
                          "Manually create a network_parameters proto for more.")
 
     if FLAGS.projection_dimensions > 0:
-        network_parameters.projection_type = "PCA"
+        network_parameters.projection_type = FLAGS.projection_type
         network_parameters.projection_dimensions = FLAGS.projection_dimensions
     for i in xrange(FLAGS.num_hidden_layers):
         hidden = utils.LayerParameters()

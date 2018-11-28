@@ -2,8 +2,8 @@ import os
 import subprocess
 import tensorflow as tf
 
-pcaInputs = [('no_pca', '0')]
-epsInputs = ['0', '0.1', '0.2', '0.5', '1', '2', '4'] 
+pcaInputs = [('jl', '60'), ('pca', '60'), ('no_pca', '0')]
+epsInputs = ['0', '0.5', '1', '1.5', '2', '3', '4'] 
 numTrainingStepsInputs = ['600']
 
 for pca in pcaInputs:
@@ -25,6 +25,10 @@ for pca in pcaInputs:
 				cmd.append('--num_training_steps=%s' % numTrainingSteps)
 				cmd.append('--projection_dimensions=%s' % pca[1])
 				cmd.append('--accountant_type=Amortized')
+
+				if pca[0] is not 'no_pca':
+					cmd.append('--projection_type=%s' % pca[0].upper())
+
 
 				subprocess.check_output(cmd)
 				print('Checkpoint written to %s' % savePath)
