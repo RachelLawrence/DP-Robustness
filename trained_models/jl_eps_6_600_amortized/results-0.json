@@ -1,0 +1,811 @@
+{
+  "elapsed_secs": 660.6492002010345,
+  "spent_eps_deltas": [
+    [
+      55.920737711961564,
+      0.00012000078277196735
+    ]
+  ],
+  "train_accuracy": 0.8475,
+  "test_accuracy": 0.8491,
+  "num_training_steps": 600,
+  "mistakes": null,
+  "result_series": [
+    {
+      "step": 10,
+      "elapsed_secs": 14.750725269317627,
+      "spent_eps_deltas": [
+        [
+          7.219295596687638,
+          1.9999995402031345e-06
+        ]
+      ],
+      "train_accuracy": 0.406,
+      "test_accuracy": 0.4152,
+      "mistakes": null
+    },
+    {
+      "step": 20,
+      "elapsed_secs": 10.959688901901245,
+      "spent_eps_deltas": [
+        [
+          10.209625743616023,
+          4.000000899395673e-06
+        ]
+      ],
+      "train_accuracy": 0.5731,
+      "test_accuracy": 0.5935,
+      "mistakes": null
+    },
+    {
+      "step": 30,
+      "elapsed_secs": 11.035879850387573,
+      "spent_eps_deltas": [
+        [
+          12.504186920858062,
+          5.999997938488377e-06
+        ]
+      ],
+      "train_accuracy": 0.6374,
+      "test_accuracy": 0.6556,
+      "mistakes": null
+    },
+    {
+      "step": 40,
+      "elapsed_secs": 10.934733152389526,
+      "spent_eps_deltas": [
+        [
+          14.438591193375276,
+          7.999995432328433e-06
+        ]
+      ],
+      "train_accuracy": 0.6665,
+      "test_accuracy": 0.682,
+      "mistakes": null
+    },
+    {
+      "step": 50,
+      "elapsed_secs": 10.877205848693848,
+      "spent_eps_deltas": [
+        [
+          16.14283605832195,
+          9.999992471421137e-06
+        ]
+      ],
+      "train_accuracy": 0.6911,
+      "test_accuracy": 0.7047,
+      "mistakes": null
+    },
+    {
+      "step": 60,
+      "elapsed_secs": 10.9642813205719,
+      "spent_eps_deltas": [
+        [
+          17.68359935870797,
+          1.1999989510513842e-05
+        ]
+      ],
+      "train_accuracy": 0.7035,
+      "test_accuracy": 0.7191,
+      "mistakes": null
+    },
+    {
+      "step": 70,
+      "elapsed_secs": 10.924095869064331,
+      "spent_eps_deltas": [
+        [
+          19.10047686715529,
+          1.3999986549606547e-05
+        ]
+      ],
+      "train_accuracy": 0.7216,
+      "test_accuracy": 0.7331,
+      "mistakes": null
+    },
+    {
+      "step": 80,
+      "elapsed_secs": 10.943131923675537,
+      "spent_eps_deltas": [
+        [
+          20.41927390545932,
+          1.5999990864656866e-05
+        ]
+      ],
+      "train_accuracy": 0.7334,
+      "test_accuracy": 0.7494,
+      "mistakes": null
+    },
+    {
+      "step": 90,
+      "elapsed_secs": 11.006500005722046,
+      "spent_eps_deltas": [
+        [
+          21.65791488346949,
+          1.8000006093643606e-05
+        ]
+      ],
+      "train_accuracy": 0.7459,
+      "test_accuracy": 0.7599,
+      "mistakes": null
+    },
+    {
+      "step": 100,
+      "elapsed_secs": 10.981235980987549,
+      "spent_eps_deltas": [
+        [
+          22.829448434430308,
+          2.0000021322630346e-05
+        ]
+      ],
+      "train_accuracy": 0.7536,
+      "test_accuracy": 0.7662,
+      "mistakes": null
+    },
+    {
+      "step": 110,
+      "elapsed_secs": 11.027323961257935,
+      "spent_eps_deltas": [
+        [
+          23.94371808517189,
+          2.2000036551617086e-05
+        ]
+      ],
+      "train_accuracy": 0.7631,
+      "test_accuracy": 0.7765,
+      "mistakes": null
+    },
+    {
+      "step": 120,
+      "elapsed_secs": 10.882386207580566,
+      "spent_eps_deltas": [
+        [
+          25.008389705538068,
+          2.4000051780603826e-05
+        ]
+      ],
+      "train_accuracy": 0.7701,
+      "test_accuracy": 0.7832,
+      "mistakes": null
+    },
+    {
+      "step": 130,
+      "elapsed_secs": 10.945291757583618,
+      "spent_eps_deltas": [
+        [
+          26.029550045783303,
+          2.6000067009590566e-05
+        ]
+      ],
+      "train_accuracy": 0.7756,
+      "test_accuracy": 0.7877,
+      "mistakes": null
+    },
+    {
+      "step": 140,
+      "elapsed_secs": 10.95641803741455,
+      "spent_eps_deltas": [
+        [
+          27.012134227191538,
+          2.8000082238577306e-05
+        ]
+      ],
+      "train_accuracy": 0.7792,
+      "test_accuracy": 0.7923,
+      "mistakes": null
+    },
+    {
+      "step": 150,
+      "elapsed_secs": 10.957165002822876,
+      "spent_eps_deltas": [
+        [
+          27.960209502607228,
+          3.0000097467564046e-05
+        ]
+      ],
+      "train_accuracy": 0.7902,
+      "test_accuracy": 0.7971,
+      "mistakes": null
+    },
+    {
+      "step": 160,
+      "elapsed_secs": 10.913875102996826,
+      "spent_eps_deltas": [
+        [
+          28.877174989107964,
+          3.2000112696550786e-05
+        ]
+      ],
+      "train_accuracy": 0.7909,
+      "test_accuracy": 0.8011,
+      "mistakes": null
+    },
+    {
+      "step": 170,
+      "elapsed_secs": 10.870660066604614,
+      "spent_eps_deltas": [
+        [
+          29.76590592059038,
+          3.4000127925537527e-05
+        ]
+      ],
+      "train_accuracy": 0.793,
+      "test_accuracy": 0.8052,
+      "mistakes": null
+    },
+    {
+      "step": 180,
+      "elapsed_secs": 10.89867377281189,
+      "spent_eps_deltas": [
+        [
+          30.62886016807208,
+          3.600014315452427e-05
+        ]
+      ],
+      "train_accuracy": 0.7968,
+      "test_accuracy": 0.8069,
+      "mistakes": null
+    },
+    {
+      "step": 190,
+      "elapsed_secs": 11.018947124481201,
+      "spent_eps_deltas": [
+        [
+          31.46815843225001,
+          3.800015838351101e-05
+        ]
+      ],
+      "train_accuracy": 0.8004,
+      "test_accuracy": 0.8092,
+      "mistakes": null
+    },
+    {
+      "step": 200,
+      "elapsed_secs": 10.957131147384644,
+      "spent_eps_deltas": [
+        [
+          32.28565321191926,
+          4.000017361249775e-05
+        ]
+      ],
+      "train_accuracy": 0.8021,
+      "test_accuracy": 0.8116,
+      "mistakes": null
+    },
+    {
+      "step": 210,
+      "elapsed_secs": 10.955384016036987,
+      "spent_eps_deltas": [
+        [
+          33.08296455799136,
+          4.200018884148449e-05
+        ]
+      ],
+      "train_accuracy": 0.8,
+      "test_accuracy": 0.8141,
+      "mistakes": null
+    },
+    {
+      "step": 220,
+      "elapsed_secs": 11.016067743301392,
+      "spent_eps_deltas": [
+        [
+          33.8615074172771,
+          4.400020407047123e-05
+        ]
+      ],
+      "train_accuracy": 0.8066,
+      "test_accuracy": 0.8141,
+      "mistakes": null
+    },
+    {
+      "step": 230,
+      "elapsed_secs": 10.999571084976196,
+      "spent_eps_deltas": [
+        [
+          34.62254793043563,
+          4.600021929945797e-05
+        ]
+      ],
+      "train_accuracy": 0.8072,
+      "test_accuracy": 0.8169,
+      "mistakes": null
+    },
+    {
+      "step": 240,
+      "elapsed_secs": 11.02899694442749,
+      "spent_eps_deltas": [
+        [
+          35.36721597497197,
+          4.800023452844471e-05
+        ]
+      ],
+      "train_accuracy": 0.8158,
+      "test_accuracy": 0.8196,
+      "mistakes": null
+    },
+    {
+      "step": 250,
+      "elapsed_secs": 10.835728883743286,
+      "spent_eps_deltas": [
+        [
+          36.09652485275158,
+          5.000024975743145e-05
+        ]
+      ],
+      "train_accuracy": 0.8121,
+      "test_accuracy": 0.821,
+      "mistakes": null
+    },
+    {
+      "step": 260,
+      "elapsed_secs": 11.028723239898682,
+      "spent_eps_deltas": [
+        [
+          36.81138746461905,
+          5.200026498641819e-05
+        ]
+      ],
+      "train_accuracy": 0.8172,
+      "test_accuracy": 0.822,
+      "mistakes": null
+    },
+    {
+      "step": 270,
+      "elapsed_secs": 10.927414894104004,
+      "spent_eps_deltas": [
+        [
+          37.51262970914346,
+          5.400028021540493e-05
+        ]
+      ],
+      "train_accuracy": 0.818,
+      "test_accuracy": 0.8243,
+      "mistakes": null
+    },
+    {
+      "step": 280,
+      "elapsed_secs": 11.102406024932861,
+      "spent_eps_deltas": [
+        [
+          38.201001666452576,
+          5.600029544439167e-05
+        ]
+      ],
+      "train_accuracy": 0.8221,
+      "test_accuracy": 0.8252,
+      "mistakes": null
+    },
+    {
+      "step": 290,
+      "elapsed_secs": 11.048112869262695,
+      "spent_eps_deltas": [
+        [
+          38.87718699887265,
+          5.800031067337841e-05
+        ]
+      ],
+      "train_accuracy": 0.8179,
+      "test_accuracy": 0.8263,
+      "mistakes": null
+    },
+    {
+      "step": 300,
+      "elapsed_secs": 10.958606243133545,
+      "spent_eps_deltas": [
+        [
+          39.54181090403312,
+          6.000032590236515e-05
+        ]
+      ],
+      "train_accuracy": 0.8208,
+      "test_accuracy": 0.8283,
+      "mistakes": null
+    },
+    {
+      "step": 310,
+      "elapsed_secs": 10.964269876480103,
+      "spent_eps_deltas": [
+        [
+          40.19544688388615,
+          6.200034113135189e-05
+        ]
+      ],
+      "train_accuracy": 0.8207,
+      "test_accuracy": 0.8304,
+      "mistakes": null
+    },
+    {
+      "step": 320,
+      "elapsed_secs": 10.984333992004395,
+      "spent_eps_deltas": [
+        [
+          40.838622538233494,
+          6.400035636033863e-05
+        ]
+      ],
+      "train_accuracy": 0.8245,
+      "test_accuracy": 0.8302,
+      "mistakes": null
+    },
+    {
+      "step": 330,
+      "elapsed_secs": 10.850650072097778,
+      "spent_eps_deltas": [
+        [
+          41.47182454926854,
+          6.600037158932537e-05
+        ]
+      ],
+      "train_accuracy": 0.8202,
+      "test_accuracy": 0.833,
+      "mistakes": null
+    },
+    {
+      "step": 340,
+      "elapsed_secs": 11.265487909317017,
+      "spent_eps_deltas": [
+        [
+          42.095502991059654,
+          6.800038681831211e-05
+        ]
+      ],
+      "train_accuracy": 0.8276,
+      "test_accuracy": 0.8331,
+      "mistakes": null
+    },
+    {
+      "step": 350,
+      "elapsed_secs": 10.76217794418335,
+      "spent_eps_deltas": [
+        [
+          42.71007507246168,
+          7.000040204729885e-05
+        ]
+      ],
+      "train_accuracy": 0.8278,
+      "test_accuracy": 0.8342,
+      "mistakes": null
+    },
+    {
+      "step": 360,
+      "elapsed_secs": 11.029090166091919,
+      "spent_eps_deltas": [
+        [
+          43.31592840192061,
+          7.200041727628559e-05
+        ]
+      ],
+      "train_accuracy": 0.8285,
+      "test_accuracy": 0.8348,
+      "mistakes": null
+    },
+    {
+      "step": 370,
+      "elapsed_secs": 11.048397064208984,
+      "spent_eps_deltas": [
+        [
+          43.9134238467614,
+          7.400043250527233e-05
+        ]
+      ],
+      "train_accuracy": 0.8282,
+      "test_accuracy": 0.8368,
+      "mistakes": null
+    },
+    {
+      "step": 380,
+      "elapsed_secs": 10.923751831054688,
+      "spent_eps_deltas": [
+        [
+          44.502898046872325,
+          7.600044773425907e-05
+        ]
+      ],
+      "train_accuracy": 0.8339,
+      "test_accuracy": 0.8377,
+      "mistakes": null
+    },
+    {
+      "step": 390,
+      "elapsed_secs": 10.874992847442627,
+      "spent_eps_deltas": [
+        [
+          45.084665632510934,
+          7.800046296324581e-05
+        ]
+      ],
+      "train_accuracy": 0.8338,
+      "test_accuracy": 0.8386,
+      "mistakes": null
+    },
+    {
+      "step": 400,
+      "elapsed_secs": 10.919141292572021,
+      "spent_eps_deltas": [
+        [
+          45.659019850956064,
+          8.000047819223255e-05
+        ]
+      ],
+      "train_accuracy": 0.8337,
+      "test_accuracy": 0.839,
+      "mistakes": null
+    },
+    {
+      "step": 410,
+      "elapsed_secs": 10.940553903579712,
+      "spent_eps_deltas": [
+        [
+          46.226239673750236,
+          8.200049342121929e-05
+        ]
+      ],
+      "train_accuracy": 0.8336,
+      "test_accuracy": 0.8395,
+      "mistakes": null
+    },
+    {
+      "step": 420,
+      "elapsed_secs": 10.923649072647095,
+      "spent_eps_deltas": [
+        [
+          46.786583279824995,
+          8.400050865020603e-05
+        ]
+      ],
+      "train_accuracy": 0.8315,
+      "test_accuracy": 0.8411,
+      "mistakes": null
+    },
+    {
+      "step": 430,
+      "elapsed_secs": 10.98754096031189,
+      "spent_eps_deltas": [
+        [
+          47.3402948409175,
+          8.600052387919277e-05
+        ]
+      ],
+      "train_accuracy": 0.8329,
+      "test_accuracy": 0.842,
+      "mistakes": null
+    },
+    {
+      "step": 440,
+      "elapsed_secs": 10.917414903640747,
+      "spent_eps_deltas": [
+        [
+          47.88760441126701,
+          8.800053910817951e-05
+        ]
+      ],
+      "train_accuracy": 0.8362,
+      "test_accuracy": 0.842,
+      "mistakes": null
+    },
+    {
+      "step": 450,
+      "elapsed_secs": 10.949833869934082,
+      "spent_eps_deltas": [
+        [
+          48.42872904459707,
+          9.000055433716625e-05
+        ]
+      ],
+      "train_accuracy": 0.8376,
+      "test_accuracy": 0.8431,
+      "mistakes": null
+    },
+    {
+      "step": 460,
+      "elapsed_secs": 10.787177324295044,
+      "spent_eps_deltas": [
+        [
+          48.96387379997624,
+          9.200056956615299e-05
+        ]
+      ],
+      "train_accuracy": 0.8405,
+      "test_accuracy": 0.8435,
+      "mistakes": null
+    },
+    {
+      "step": 470,
+      "elapsed_secs": 10.981807947158813,
+      "spent_eps_deltas": [
+        [
+          49.49323264977748,
+          9.400058479513973e-05
+        ]
+      ],
+      "train_accuracy": 0.8378,
+      "test_accuracy": 0.8434,
+      "mistakes": null
+    },
+    {
+      "step": 480,
+      "elapsed_secs": 10.904633045196533,
+      "spent_eps_deltas": [
+        [
+          50.01698930113647,
+          9.600060002412647e-05
+        ]
+      ],
+      "train_accuracy": 0.8359,
+      "test_accuracy": 0.8439,
+      "mistakes": null
+    },
+    {
+      "step": 490,
+      "elapsed_secs": 10.97469186782837,
+      "spent_eps_deltas": [
+        [
+          50.53531794077287,
+          9.800061525311321e-05
+        ]
+      ],
+      "train_accuracy": 0.836,
+      "test_accuracy": 0.8441,
+      "mistakes": null
+    },
+    {
+      "step": 500,
+      "elapsed_secs": 10.908458948135376,
+      "spent_eps_deltas": [
+        [
+          51.04838391173613,
+          0.00010000063048209995
+        ]
+      ],
+      "train_accuracy": 0.8376,
+      "test_accuracy": 0.8445,
+      "mistakes": null
+    },
+    {
+      "step": 510,
+      "elapsed_secs": 10.96773910522461,
+      "spent_eps_deltas": [
+        [
+          51.556344329529416,
+          0.00010200064571108669
+        ]
+      ],
+      "train_accuracy": 0.8396,
+      "test_accuracy": 0.8443,
+      "mistakes": null
+    },
+    {
+      "step": 520,
+      "elapsed_secs": 10.907535791397095,
+      "spent_eps_deltas": [
+        [
+          52.05934864411962,
+          0.00010400066094007343
+        ]
+      ],
+      "train_accuracy": 0.8425,
+      "test_accuracy": 0.8467,
+      "mistakes": null
+    },
+    {
+      "step": 530,
+      "elapsed_secs": 10.901145219802856,
+      "spent_eps_deltas": [
+        [
+          52.55753915353153,
+          0.00010600067616906017
+        ]
+      ],
+      "train_accuracy": 0.8477,
+      "test_accuracy": 0.8477,
+      "mistakes": null
+    },
+    {
+      "step": 540,
+      "elapsed_secs": 10.926697969436646,
+      "spent_eps_deltas": [
+        [
+          53.0510514740283,
+          0.00010800069139804691
+        ]
+      ],
+      "train_accuracy": 0.8428,
+      "test_accuracy": 0.8482,
+      "mistakes": null
+    },
+    {
+      "step": 550,
+      "elapsed_secs": 10.998311996459961,
+      "spent_eps_deltas": [
+        [
+          53.54001497128106,
+          0.00011000070662703365
+        ]
+      ],
+      "train_accuracy": 0.839,
+      "test_accuracy": 0.8485,
+      "mistakes": null
+    },
+    {
+      "step": 560,
+      "elapsed_secs": 10.854748010635376,
+      "spent_eps_deltas": [
+        [
+          54.02455315641213,
+          0.00011200072185602039
+        ]
+      ],
+      "train_accuracy": 0.8445,
+      "test_accuracy": 0.8491,
+      "mistakes": null
+    },
+    {
+      "step": 570,
+      "elapsed_secs": 10.918881893157959,
+      "spent_eps_deltas": [
+        [
+          54.50478405034736,
+          0.00011400073708500713
+        ]
+      ],
+      "train_accuracy": 0.8479,
+      "test_accuracy": 0.8491,
+      "mistakes": null
+    },
+    {
+      "step": 580,
+      "elapsed_secs": 10.801331281661987,
+      "spent_eps_deltas": [
+        [
+          54.980820519522986,
+          0.00011600075231399387
+        ]
+      ],
+      "train_accuracy": 0.8464,
+      "test_accuracy": 0.8488,
+      "mistakes": null
+    },
+    {
+      "step": 590,
+      "elapsed_secs": 10.91447377204895,
+      "spent_eps_deltas": [
+        [
+          55.45277058565244,
+          0.00011800076754298061
+        ]
+      ],
+      "train_accuracy": 0.8423,
+      "test_accuracy": 0.8483,
+      "mistakes": null
+    },
+    {
+      "step": 600,
+      "elapsed_secs": 10.853918075561523,
+      "spent_eps_deltas": [
+        [
+          55.920737711961564,
+          0.00012000078277196735
+        ]
+      ],
+      "train_accuracy": 0.8475,
+      "test_accuracy": 0.8491,
+      "mistakes": null
+    }
+  ],
+  "accountant_type": "Amortized",
+  "task_id": 0,
+  "batch_size": 600,
+  "projection_dimensions": 60,
+  "projection_type": "JL",
+  "default_gradient_l2norm_bound": 4.0,
+  "num_hidden_layers": 1,
+  "hidden_layer_num_units": 1000,
+  "num_examples": 60000,
+  "learning_rate": 0.05,
+  "end_learning_rate": 0.05,
+  "learning_rate_saturate_epochs": 0.0,
+  "flag_eps": 6.0,
+  "flag_delta": 1e-05,
+  "flag_pca_eps": 0.5,
+  "flag_pca_delta": 0.005
+}
