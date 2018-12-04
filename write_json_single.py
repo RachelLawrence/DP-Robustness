@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
         print("EPSILON = %s" % eps)
         resultsDict = {}
-        modelPath = "trained_models/no_pca_eps_%s_600_amortized" % eps
+        modelPath = "trained_models/ndppca_eps_%s_600_amortized" % eps
         data, model = MNIST(), Model(modelPath) 
         inputs, targets = generate_data(data, samples=num_samples, targeted=True,
                                         start=0, inception=False)

@@ -32,6 +32,8 @@ from third_party.differential_privacy.dp_sgd.dp_optimizer import sanitizer
 from third_party.differential_privacy.dp_sgd.dp_optimizer import utils
 from third_party.differential_privacy.privacy_accountant.tf import accountant
 
+from third_party.differential_privacy.dp_sgd.dp_optimizer import pca
+
 # parameters for the training
 tf.flags.DEFINE_integer("batch_size", 600,
                         "The training batch size.")
@@ -333,6 +335,15 @@ def Train(mnist_train_file, mnist_test_file, network_parameters, num_steps,
                     network_parameters.projection_dimensions)
                 assign_jl_proj = tf.assign(projection, jl_projection)
                 init_ops.append(assign_jl_proj)
+        elif network_parameters.projection_type == "NDPPCA":
+            with tf.variable_scope("ndppca"):
+                # Compute PCA transform / randomized projection.
+                all_data, _ = MnistInput(mnist_train_file, NUM_TRAINING_IMAGES, False)
+                ndppca_projection = pca.ComputePrincipalProjection(
+                    all_data, network_parameters.projection_dimensions,
+                    gaussian_sanitizer, [FLAGS.pca_eps, FLAGS.pca_delta], pca_sigma)
+                assign_ndppca_proj = tf.assign(projection, ndppca_projection)
+                init_ops.append(assign_ndppca_proj)
 
         # Add global_step
         global_step = tf.Variable(0, dtype=tf.int32, trainable=False,
